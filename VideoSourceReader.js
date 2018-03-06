@@ -47,6 +47,18 @@ function getDailymotionEmbedUrl(id) {
   return `https://www.dailymotion.com/embed/video/${id}`;
 }
 
+function getGoogleDriverVideoId(url) {
+  if(url.match('https://drive.google.com')) {
+    url = url.replace("view", "preview");
+    return url
+  }
+  return false;
+}
+
+function getGoogleDriverEmbedUrl(url) {
+  return `${url}`;
+}
+
 /**
  * Reads the video source and provides the video
  * url in embedded form if necessary
@@ -59,10 +71,11 @@ export default class VideoSourceReader {
     this.isYouTube = !!getYouTubeVideoId(source);
     this.isVimeo = !!getVimeoVideoId(source);
     this.isDamilymotion = !!getDailymotionVideoID(source);
+    this.isGoogleDriver = !!getGoogleDriverVideoId(source);
   }
 
   isEmbeddableVideo() {
-    return this.isYouTube || this.isVimeo || this.isDamilymotion;
+    return this.isYouTube || this.isVimeo || this.isDamilymotion || this.isGoogleDriver;
   }
 
   getUrl() {
@@ -72,6 +85,8 @@ export default class VideoSourceReader {
       return getVimeoEmbedUrl(getVimeoVideoId(this.source));
     } else if (this.isDamilymotion) {
       return getDailymotionEmbedUrl(getDailymotionVideoID(this.source));
+    } else if(this.isGoogleDriver) {
+      return getGoogleDriverEmbedUrl(getGoogleDriverVideoId(this.source));
     }
 
     return this.source;
